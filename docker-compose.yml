@@ -1,0 +1,35 @@
+version: "3"
+
+networks:
+  laravel:
+
+services:
+  mysql:
+    image: mysql:5.7.22
+    container_name: mysql
+    restart: always
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: lara_data
+      MYSQL_USER: lara
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: secret
+      SEVICE_TAGS: dev
+      SEVICE_NAME: mysql
+    networks:
+      - laravel
+
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: apache_php
+    image: laravel_php
+    volumes:
+      - ./src:/var/www/html
+    ports:
+      - "8080:80"
+    networks:
+      - laravel
