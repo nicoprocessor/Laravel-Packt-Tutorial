@@ -4,13 +4,13 @@ networks:
   laravel:
 
 services:
-  mysql:
+  db:
     image: mysql:5.7.22
     container_name: mysql
     restart: always
     tty: true
     ports:
-      - "3306:3306"
+      - 3306:3306
     environment:
       MYSQL_DATABASE: lara_data
       MYSQL_USER: lara
@@ -21,15 +21,20 @@ services:
     networks:
       - laravel
 
-  php:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: apache_php
-    image: laravel_php
-    volumes:
-      - ./src:/var/www/html
+  web:
+    tty: true
+    image: docker.io/bitnami/laravel:8
+    container_name: laravel
+    environment:
+      - DB_HOST=db
+      - DB_USERNAME=lara
+      - DB_DATABASE=lara_data
+      - DB_PASSWORD=secret
+    depends_on:
+      - db
     ports:
-      - "8080:80"
+      - 3000:3000
+    volumes:
+      - ./src:/app
     networks:
       - laravel
